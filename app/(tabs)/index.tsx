@@ -57,7 +57,7 @@ export default function HomeScreen() {
     try {
 
       const response = await axios.post(
-        'http://10.20.156.17:5000/order',
+        'https://hackdrop-app.onrender.com/order',
         {
           name,
           hostel,
