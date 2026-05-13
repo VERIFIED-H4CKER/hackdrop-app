@@ -11,7 +11,7 @@ import axios from 'axios'
 
 export default function OrdersScreen() {
 
-  const [orders, setOrders] = useState([])
+ const [orders, setOrders] = useState<any[]>([])
 
   const fetchOrders = async () => {
 
@@ -42,7 +42,9 @@ export default function OrdersScreen() {
       <Text style={styles.heading}>
         HACKDROP ORDERS
       </Text>
-
+<Text style={{color:'white'}}>
+  {JSON.stringify(orders)}
+</Text>
       <FlatList
         data={orders}
         keyExtractor={(item) => item._id}

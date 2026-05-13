@@ -1,7 +1,7 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
 
 const app = express()
 
@@ -10,7 +10,7 @@ app.use(bodyParser.json())
 
 // MongoDB Connection
 mongoose.connect(
-'mongodb://HACKER:hackdrop123@ac-bjjow7z-shard-00-00.12vpydx.mongodb.net:27017,ac-bjjow7z-shard-00-01.12vpydx.mongodb.net:27017,ac-bjjow7z-shard-00-02.12vpydx.mongodb.net:27017/?ssl=true&replicaSet=atlas-y6aoya-shard-0&authSource=admin&appName=hackdrop-cluster'
+  'mongodb+srv://HACKER:hackdrop123@hackdrop-cluster.12vpydx.mongodb.net/hackdropDB?retryWrites=true&w=majority'
 )
 
 mongoose.connection.on('connected', () => {
@@ -18,7 +18,7 @@ mongoose.connection.on('connected', () => {
 })
 
 mongoose.connection.on('error', (err) => {
-  console.log('MongoDB Connection Error:', err)
+  console.log('MongoDB Error:', err)
 })
 
 // Order Schema
@@ -31,42 +31,58 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema)
 
-// Test Route
-app.get('/', (req, res) => {
-  res.send('HACKDROP Backend Running')
-})
-
-// Order Route
+// POST Order API
 app.post('/order', async (req, res) => {
   try {
-    console.log('NEW ORDER RECEIVED')
 
-    console.log(req.body)
+    const { name, hostel, room, product } = req.body
 
     const newOrder = new Order({
-      name: req.body.name,
-      hostel: req.body.hostel,
-      room: req.body.room,
-      product: req.body.product,
+      name,
+      hostel,
+      room,
+      product,
     })
 
     await newOrder.save()
 
     res.json({
       success: true,
-      message: 'Order received and saved successfully',
+      message: 'Order Placed Successfully',
     })
+
   } catch (error) {
+
     console.log(error)
 
-    res.json({
+    res.status(500).json({
       success: false,
-      message: 'Order failed',
+      message: 'Server Error',
     })
   }
 })
 
-// Server Start
-app.listen(5000, () => {
-  console.log('Server Running On Port 5000')
+// GET Orders API
+app.get('/orders', async (req, res) => {
+
+  try {
+
+    const orders = await Order.find()
+
+    res.json(orders)
+
+  } catch (error) {
+
+    console.log(error)
+
+    res.status(500).json({
+      message: 'Error fetching orders',
+    })
+  }
+})
+
+const PORT = process.env.PORT || 5000
+
+app.listen(PORT, () => {
+  console.log(`Server Running On Port ${PORT}`)
 })
